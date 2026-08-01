@@ -1,0 +1,23 @@
+{
+  "name": "carepilot-ai-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CarePilot AI — Azure Static Web Apps API (Azure Functions wrapping the existing Express app)",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.3.0",
+    "axios": "^1.7.9",
+    "azure-function-express": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^9.0.1"
+  }
+}

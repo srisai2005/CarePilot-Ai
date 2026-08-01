@@ -1,0 +1,10 @@
+{
+  "name": "carepilot-ai",
+  "version": "2.0.0",
+  "private": true,
+  "description": "CarePilot AI — Azure Static Web Apps edition (frontend/ + api/, deployed via GitHub Actions)",
+  "scripts": {
+    "install:api": "cd api && npm install",
+    "local": "swa start frontend --api-location api"
+  }
+}

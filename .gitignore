@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment / secrets — never commit real keys
+.env
+.env.*
+api/local.settings.json
+
+# Local JSON-file data store (dev fallback only — production uses Azure Table Storage)
+api/src/data/store/*.json
+!api/src/data/store/.gitkeep
+
+# Azure Functions / Static Web Apps tooling
+api/bin/
+api/obj/
+.azure/
+.swa/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+.vscode/
+dist/
+build/

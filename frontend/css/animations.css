@@ -1,0 +1,34 @@
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeup { animation: fadeUp .5s ease both; }
+.stagger > * { animation: fadeUp .5s ease both; }
+.stagger > *:nth-child(1) { animation-delay: .02s; }
+.stagger > *:nth-child(2) { animation-delay: .08s; }
+.stagger > *:nth-child(3) { animation-delay: .14s; }
+.stagger > *:nth-child(4) { animation-delay: .2s; }
+.stagger > *:nth-child(5) { animation-delay: .26s; }
+.stagger > *:nth-child(6) { animation-delay: .32s; }
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float { animation: floaty 4.5s ease-in-out infinite; }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(94,234,212,0.35); }
+  50% { box-shadow: 0 0 0 8px rgba(94,234,212,0); }
+}
+.pulse-glow { animation: pulseGlow 1.8s ease-in-out infinite; }
+
+.page-enter { animation: fadeUp .35s ease both; }
+
+@keyframes typingDot {
+  0%, 60%, 100% { opacity: .3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+.typing-dots span { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--text-1); margin-right: 3px; animation: typingDot 1.2s infinite; }
+.typing-dots span:nth-child(2) { animation-delay: .15s; }
+.typing-dots span:nth-child(3) { animation-delay: .3s; }

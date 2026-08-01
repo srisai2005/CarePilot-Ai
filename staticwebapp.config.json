@@ -1,0 +1,20 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/api/*", "/css/*", "/js/*", "*.{png,jpg,jpeg,svg,ico,webp,gif,css,js,json,map,txt,woff,woff2}"]
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
+    }
+  ],
+  "mimeTypes": {
+    ".json": "application/json"
+  },
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  }
+}
