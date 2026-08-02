@@ -21,6 +21,7 @@ app.http('upload', {
     const form = await request.formData();
     const file = form.get('file');
     const docType = form.get('docType') || undefined;
+    const language = form.get('language') || undefined;
 
     if (!file || typeof file.arrayBuffer !== 'function') {
       throw new AppError('No file received. Attach a PDF, JPG, PNG, WAV, or MP3.', 400);
@@ -49,7 +50,7 @@ app.http('upload', {
 
       const record = await recordService.processUpload(
         { path: tempFilePath, originalname: file.name, mimetype: candidateFile.mimetype },
-        { docType, originalName: file.name }
+        { docType, originalName: file.name, language }
       );
 
       return json(201, { record });

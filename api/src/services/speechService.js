@@ -27,8 +27,11 @@ function assertConfigured() {
  * REST recognition endpoint. Suitable for voice notes up to ~60 seconds;
  * for longer recordings this can be swapped for Azure's async Batch
  * Transcription API using the same credentials.
+ *
+ * `locale` is a BCP-47 tag (e.g. 'hi-IN', 'te-IN') — see config/languages.js
+ * for the app's supported list. Defaults to English (India) if omitted.
  */
-async function transcribeAudio(filePath, mimetype) {
+async function transcribeAudio(filePath, mimetype, locale = 'en-IN') {
   assertConfigured();
 
   const audioBuffer = fs.readFileSync(filePath);
@@ -38,7 +41,7 @@ async function transcribeAudio(filePath, mimetype) {
 
   const url =
     `https://${env.speech.region}.stt.speech.microsoft.com/speech/recognition/conversation/` +
-    `cognitiveservices/v1?language=en-US&format=detailed`;
+    `cognitiveservices/v1?language=${encodeURIComponent(locale)}&format=detailed`;
 
   const resp = await axios.post(url, audioBuffer, {
     headers: {
@@ -68,11 +71,17 @@ async function transcribeAudio(filePath, mimetype) {
 
 /**
  * Converts text to speech (SSML) and returns an MP3 audio buffer.
+ * `voice` should be one of the Azure neural voice names from
+ * config/languages.js (e.g. 'hi-IN-SwaraNeural'). The SSML `xml:lang` is
+ * derived from the voice name itself so it always matches.
  */
 async function synthesizeSpeech(text, voice = 'en-US-JennyNeural') {
   assertConfigured();
 
-  const ssml = `<speak version="1.0" xml:lang="en-US">
+  const langMatch = /^([a-z]{2,3}-[A-Za-z]{2,4})-/.exec(voice);
+  const xmlLang = langMatch ? langMatch[1] : 'en-US';
+
+  const ssml = `<speak version="1.0" xml:lang="${xmlLang}">
   <voice name="${voice}">${escapeXml(text)}</voice>
 </speak>`;
 

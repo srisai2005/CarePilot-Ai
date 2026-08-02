@@ -13,6 +13,7 @@ const { simplifyPrompt } = require('../utils/promptTemplates');
 const { isImage, isPdf, isAudio } = require('../utils/validators');
 const { AppError } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
+const { getLanguage, DEFAULT_LANGUAGE } = require('../config/languages');
 
 const COLLECTION = 'records';
 const DEFAULT_USER = 'default-user'; // single-tenant demo; swap for real auth in production
@@ -35,11 +36,12 @@ function docTypeFromUpload(file, declaredType) {
  */
 async function processUpload(file, meta = {}) {
   const docType = docTypeFromUpload(file, meta.docType);
+  const language = getLanguage(meta.language || DEFAULT_LANGUAGE);
   let rawText = '';
   let ocrMeta = null;
 
   if (isAudio(file)) {
-    const { text, confidence } = await speechService.transcribeAudio(file.path, file.mimetype);
+    const { text, confidence } = await speechService.transcribeAudio(file.path, file.mimetype, language.sttLocale);
     rawText = text;
     ocrMeta = { source: 'speech-to-text', confidence };
   } else {
@@ -55,13 +57,18 @@ async function processUpload(file, meta = {}) {
     );
   }
 
-  const structured = await extractionService.extractStructuredData({ docType, text: rawText });
+  const structured = await extractionService.extractStructuredData({
+    docType,
+    text: rawText,
+    languageLabel: language.label,
+  });
 
   const record = {
     id: uuid(),
     userId: DEFAULT_USER,
     fileName: meta.originalName || file.originalname,
     docType,
+    language: language.code,
     uploadedAt: new Date().toISOString(),
     documentDate: structured.documentDateGuess || null,
     rawText,
@@ -162,8 +169,9 @@ async function simplifySummary(id) {
   }
 
   const currentText = levels.length ? levels[levels.length - 1] : record.summaryMarkdown;
+  const language = getLanguage(record.language || DEFAULT_LANGUAGE);
   const { content } = await openaiService.chatComplete(
-    simplifyPrompt({ text: currentText, level: levels.length + 1 }),
+    simplifyPrompt({ text: currentText, level: levels.length + 1, languageLabel: language.label }),
     { temperature: 0.4, maxTokens: 350 }
   );
 

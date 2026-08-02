@@ -4,6 +4,7 @@
  * requiring them here is enough to wire up all routes.
  */
 require('./functions/health');
+require('./functions/languages');
 require('./functions/upload');
 require('./functions/records');
 require('./functions/reminders');

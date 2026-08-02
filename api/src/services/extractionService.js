@@ -38,7 +38,7 @@ function guessTiming(frequencyText = '') {
  * the OpenAI structured extraction below is the primary source of truth) and
  * Azure OpenAI structured JSON extraction + a plain-language summary.
  */
-async function extractStructuredData({ docType, text }) {
+async function extractStructuredData({ docType, text, languageLabel = 'English' }) {
   let clinicalEntities = [];
   try {
     const health = await languageService.analyzeHealth(text);
@@ -59,7 +59,7 @@ async function extractStructuredData({ docType, text }) {
   }));
 
   const { content: summaryMarkdown } = await openaiService.chatComplete(
-    summarizePrompt({ docType, extractedText: text }),
+    summarizePrompt({ docType, extractedText: text, languageLabel }),
     { temperature: 0.4, maxTokens: 450 }
   );
 

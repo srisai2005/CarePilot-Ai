@@ -4,6 +4,7 @@ const searchService = require('./searchService');
 const openaiService = require('./openaiService');
 const { ragChatPrompt } = require('../utils/promptTemplates');
 const { AppError } = require('../middleware/errorHandler');
+const { getLanguage, DEFAULT_LANGUAGE } = require('../config/languages');
 
 const COLLECTION = 'chats';
 
@@ -34,10 +35,12 @@ async function saveMessage(userId, role, content, sources = []) {
  *     "answer only from these sources" system prompt
  *  3. Persist both the question and answer for the chat history UI
  */
-async function askQuestion(userId, question) {
+async function askQuestion(userId, question, languageCode = DEFAULT_LANGUAGE) {
   if (!question || !question.trim()) {
     throw new AppError('Please type a question.', 400);
   }
+
+  const language = getLanguage(languageCode);
 
   let snippets = [];
   try {
@@ -56,7 +59,12 @@ async function askQuestion(userId, question) {
   }
 
   const history = await getHistory(userId);
-  const messages = ragChatPrompt({ question, contextSnippets: snippets, chatHistory: history });
+  const messages = ragChatPrompt({
+    question,
+    contextSnippets: snippets,
+    chatHistory: history,
+    languageLabel: language.label,
+  });
 
   const { content: answer } = await openaiService.chatComplete(messages, {
     temperature: 0.2,

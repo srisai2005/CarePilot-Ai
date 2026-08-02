@@ -27,7 +27,7 @@ Hard rules you must always follow:
    - Warm, patient, reassuring tone — never rushed or robotic.
 `;
 
-function summarizePrompt({ docType, extractedText }) {
+function summarizePrompt({ docType, extractedText, languageLabel = 'English' }) {
   return [
     {
       role: 'system',
@@ -39,7 +39,9 @@ function summarizePrompt({ docType, extractedText }) {
         `explain any term you use), and 3) if relevant, a "Next steps" bullet reminding them to ` +
         `follow their doctor's instructions or ask questions at their next visit. Use Markdown ` +
         `with short bullet points. Do not invent information that is not present in the document ` +
-        `text below.`,
+        `text below.\n\nWrite your ENTIRE response in ${languageLabel}, including all headings and ` +
+        `bullet points. Keep medicine names, doctor names, hospital names, and numeric values ` +
+        `(dosages, dates, test values) exactly as written in the source document, untranslated.`,
     },
     {
       role: 'user',
@@ -48,7 +50,7 @@ function summarizePrompt({ docType, extractedText }) {
   ];
 }
 
-function simplifyPrompt({ text, level = 1 }) {
+function simplifyPrompt({ text, level = 1, languageLabel = 'English' }) {
   const levelInstruction =
     level >= 3
       ? 'Explain this the way you would to a curious 6-year-old: tiny sentences, everyday ' +
@@ -65,7 +67,8 @@ function simplifyPrompt({ text, level = 1 }) {
         `still too hard to understand. Rewrite it to be noticeably SIMPLER than the version given ` +
         `to you. ${levelInstruction}\n${SAFETY_RULES}\nKeep it short (under 130 words), keep the ` +
         'same factual content — do not add new facts, and do not remove the "talk to your doctor" ' +
-        'reminder if the original had one. Use Markdown bullet points.',
+        `reminder if the original had one. Use Markdown bullet points. Write your ENTIRE response ` +
+        `in ${languageLabel}.`,
     },
     {
       role: 'user',
@@ -102,7 +105,7 @@ function extractionPrompt({ docType, extractedText }) {
   ];
 }
 
-function ragChatPrompt({ question, contextSnippets, chatHistory = [] }) {
+function ragChatPrompt({ question, contextSnippets, chatHistory = [], languageLabel = 'English' }) {
   const context = contextSnippets
     .map((s, i) => `[Source ${i + 1} — ${s.docType || 'record'} (${s.date || 'undated'})]\n${s.content}`)
     .join('\n\n---\n\n');
@@ -135,6 +138,9 @@ function ragChatPrompt({ question, contextSnippets, chatHistory = [] }) {
       'comparisons — never say "I already explained this."\n' +
       '- Cite which source you used like "(Source 2)" when your answer relies on their uploaded ' +
       'records.\n\n' +
+      `Write your ENTIRE answer in ${languageLabel}, regardless of what language the question or ` +
+      `the retrieved snippets are in. Keep medicine names, doctor names, hospital names, and ` +
+      `numeric values (dosages, dates, test values) exactly as written in the source, untranslated.\n\n` +
       `Retrieved record snippets (may be empty if the question doesn't need them):\n"""\n${context || '(no matching snippets found)'}\n"""`,
   };
 

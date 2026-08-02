@@ -18,8 +18,8 @@ app.http('chatAsk', {
   methods: ['POST'],
   authLevel: 'anonymous',
   handler: withErrorHandling(async (request) => {
-    const { question } = await readJsonBody(request);
-    const result = await ragService.askQuestion(recordService.DEFAULT_USER, question);
+    const { question, language } = await readJsonBody(request);
+    const result = await ragService.askQuestion(recordService.DEFAULT_USER, question, language);
     return json(200, result);
   }),
 });
