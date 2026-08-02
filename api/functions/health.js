@@ -1,13 +1,13 @@
-const express = require('express');
-const asyncHandler = require('../middleware/asyncHandler');
-const env = require('../config/env');
+const { app } = require('@azure/functions');
+const { json, withErrorHandling } = require('./_http');
+const env = require('../src/config/env');
 
-const router = express.Router();
-
-router.get(
-  '/',
-  asyncHandler(async (req, res) => {
-    res.json({
+app.http('health', {
+  route: 'health',
+  methods: ['GET'],
+  authLevel: 'anonymous',
+  handler: withErrorHandling(async () => {
+    return json(200, {
       status: 'ok',
       time: new Date().toISOString(),
       azureServices: {
@@ -18,7 +18,5 @@ router.get(
         speech: env.speech.isConfigured,
       },
     });
-  })
-);
-
-module.exports = router;
+  }),
+});
