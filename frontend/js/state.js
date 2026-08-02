@@ -2,6 +2,16 @@
 const Store = {
   recordsCache: null,
   lastRoute: '/',
+  languages: [], // populated from /api/languages on boot: [{code, label, ttsVoice}]
+  get language() {
+    return localStorage.getItem('carepilot_language') || 'en-US';
+  },
+  set language(code) {
+    localStorage.setItem('carepilot_language', code);
+  },
+  languageInfo(code = Store.language) {
+    return Store.languages.find((l) => l.code === code) || { code, label: code, ttsVoice: 'en-US-JennyNeural' };
+  },
 };
 
 const Fmt = {

@@ -17,8 +17,14 @@ const App = {
     { pattern: /^#\/records\/([^/?]+)$/, page: RecordDetailPage, params: ['id'] },
   ],
 
-  init() {
+  async init() {
     if (typeof A11y !== 'undefined') A11y.init();
+    try {
+      const { languages } = await API.languages();
+      Store.languages = languages;
+    } catch (err) {
+      console.warn('Could not load language list, defaulting to English.', err);
+    }
     window.addEventListener('hashchange', () => this._handleRoute());
     this._handleRoute();
   },

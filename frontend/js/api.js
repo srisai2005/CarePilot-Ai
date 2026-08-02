@@ -33,12 +33,14 @@ const API = (() => {
 
   return {
     health: () => request('/health'),
+    languages: () => request('/languages'),
 
     uploadFile: (file, docType, onProgress) =>
       new Promise((resolve, reject) => {
         const fd = new FormData();
         fd.append('file', file);
         if (docType) fd.append('docType', docType);
+        fd.append('language', Store.language);
         const xhr = new XMLHttpRequest();
         xhr.open('POST', BASE + '/upload');
         xhr.upload.onprogress = (e) => {
@@ -70,14 +72,18 @@ const API = (() => {
     deleteReminder: (id) => request(`/reminders/${id}`, { method: 'DELETE' }),
 
     chatHistory: () => request('/chat/history'),
-    askChat: (question) => request('/chat', { method: 'POST', body: { question } }),
+    askChat: (question) => request('/chat', { method: 'POST', body: { question, language: Store.language } }),
 
     dictionary: (q) => request(`/dictionary${q ? `?q=${encodeURIComponent(q)}` : ''}`),
 
     search: (q) => request(`/search?q=${encodeURIComponent(q)}`),
 
     ttsAudioUrl: async (text, voice) => {
-      const resp = await request('/speech/tts', { method: 'POST', body: { text, voice }, raw: true });
+      const resp = await request('/speech/tts', {
+        method: 'POST',
+        body: { text, voice: voice || Store.languageInfo().ttsVoice },
+        raw: true,
+      });
       const blob = await resp.blob();
       return URL.createObjectURL(blob);
     },

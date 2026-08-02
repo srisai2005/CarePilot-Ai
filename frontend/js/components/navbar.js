@@ -29,12 +29,25 @@ const Navbar = {
           <input class="input" id="global-search-input" placeholder="Search your records…" style="width:200px" />
           <div id="global-search-results"></div>
         </div>`}
+        <select class="input btn-sm" id="language-select" title="Language for AI summaries, chat, and voice" style="width:auto;padding:6px 10px;">
+          ${(Store.languages.length ? Store.languages : [{ code: 'en-US', label: 'English' }])
+            .map((l) => `<option value="${l.code}" ${l.code === Store.language ? 'selected' : ''}>${Fmt.escapeHtml(l.label)}</option>`)
+            .join('')}
+        </select>
         <button class="btn btn-sm glass btn-icon" id="a11y-toggle" title="Make text bigger — helpful for older adults or kids" aria-pressed="${largeTextOn}">
           ${largeTextOn ? 'A<span style="font-size:16px;">A</span>' : 'Aa'}
         </button>
         <a href="#/upload" class="btn btn-primary btn-sm">+ Upload</a>
       </div>
     `;
+
+    const langSelect = document.getElementById('language-select');
+    if (langSelect) {
+      langSelect.addEventListener('change', () => {
+        Store.language = langSelect.value;
+        Toast.info(`Language set to ${Store.languageInfo(langSelect.value).label}. New uploads, chat replies, and voice will use it.`);
+      });
+    }
 
     const a11yBtn = document.getElementById('a11y-toggle');
     if (a11yBtn) {
